@@ -14,8 +14,9 @@ class ArtNet(asyncio.DatagramProtocol):
     def connection_made(self, transport):
         self._transport = transport
 
-    def register_uni(self, uni, queue)
+    def register_uni(self, uni, queue):
         self._universeQueues[uni] = queue
+        return self
 
     def datagram_received(self, data, addr):
 
@@ -26,7 +27,7 @@ class ArtNet(asyncio.DatagramProtocol):
                 pass
 
 
-        if(data[0:12] == ARTNET_HEADER):
+        if(data[0:12] == self.ARTNET_HEADER):
 
             sequence = data[12]
             physical = data[13]
@@ -35,7 +36,10 @@ class ArtNet(asyncio.DatagramProtocol):
             frame = DMX512Frame(list(data[18:]))
 
             #TODO: sequence check?
-            asyncio.ensure_future(cb(universe, frame))
+            asyncio.ensure_future(receive_cb(universe, frame))
+
+    def __call__(self):
+        return self
 
 class DMX512Frame(object):
 
