@@ -8,21 +8,22 @@ class ArtNet(asyncio.DatagramProtocol):
 
     def __init__(self):
         self._transport = None
-        self._universeQueues = {}
+        self._universes = {}
         self._sequence = 0
 
     def connection_made(self, transport):
         self._transport = transport
 
-    def register_uni(self, uni, queue):
-        self._universeQueues[uni] = queue
-        return self
+    def create_universe(self, universe):
+        u = Universe(universe)
+        self._universes[universe] = u
+        return u
 
     def datagram_received(self, data, addr):
 
         async def receive_cb(uni, frame):
             try:
-                await self._universeQueues[uni].put(frame)
+                await self._universes[uni].put(frame)
             except KeyError:
                 pass
 
@@ -51,3 +52,12 @@ class DMX512Frame(object):
 
     def get_channel_value(self, ch):
         return self._data[ch - 1]
+
+class Universe(asyncio.Queue):
+
+    def __init__(self, universe):
+        super().__init__(maxsize=20)
+        self._universe = universe
+
+    def get_universe(self):
+        return self._universe
