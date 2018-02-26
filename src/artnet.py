@@ -6,10 +6,15 @@ class ArtNet(asyncio.DatagramProtocol):
     #Contains ID, opcode and protocol version, rest is to be parsed
     ARTNET_HEADER = bytes([65,114,116,45,78,101,116,0,0,80,0,14])
 
-    def __init__(self):
+    def __init__(self, loop, addr):
+        self._loop = loop
         self._transport = None
         self._universes = {}
         self._sequence = 0
+
+
+        listen = loop.create_datagram_endpoint(self, local_addr = addr)
+        loop.run_until_complete(listen)
 
     def connection_made(self, transport):
         self._transport = transport
@@ -41,6 +46,9 @@ class ArtNet(asyncio.DatagramProtocol):
 
     def __call__(self):
         return self
+
+    def close(self):
+        self._transport.close()
 
 class DMX512Frame(object):
 
