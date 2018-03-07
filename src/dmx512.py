@@ -58,7 +58,7 @@ class CallbackExecutor(object):
 
     def add_coroutine_callback(self, channel, callback):
 
-        self._callbacks[channel] = callback
+        self._callbacks[channel - 1] = callback
 
     def add_callback(self, channel, callback):
 
