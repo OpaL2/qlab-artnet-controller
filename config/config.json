@@ -1,0 +1,12 @@
+{
+  "networking": {
+    "address": "2.0.0.0",
+    "subnet": "255.0.0.0",
+    "port": 6454
+  },
+  "DMX512": {
+    "universe": 0,
+    "control_channel": 1,
+    "parameter_channel": 2
+  }
+}
