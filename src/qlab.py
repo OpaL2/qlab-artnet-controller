@@ -1,32 +1,45 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import worker
-
 
 class QLab(object):
 
-    def __init__(self, inp)
+    def __init__(self, control_channel, parameter_channel):
+        self._control_channel = control_channel
+        self._parameter_channel = parameter_channel
+        self._executors = {}
 
-        self._commands = {}
-        self._worker = QLabWorker(inp, config, self._commands)
+    def parse_executors(self, executor_config):
 
-    def __call__(self):
-        self._worker()
 
-    def close(self):
-        self._worker.close()
+    def get_callback(self):
+        return self._control_channel, self._callback
 
-class QLabWorker(worker.AbstractWorker):
+    def _add_executor(self, channel_value, executor):
+        self._executors[channel_value] = executor
 
-    def __init__(self, inp, config, commands):
-        super().__init__(inp)
-        self._config = config
-        self._commands = commands
-        self.state = QLabState()
+    async def _callback(self, packet):
+        try:
+            executor = self._executors[packet.get_channel_value(self._control_channel)]
+            process = await asyncio.create_subprocess_exec(executor(packet.get_channel_value(self._parameter_channel)))
 
-    async def process_next(self, item):
+            await process.wait()
+            returncode = process.returncode
+            if returncode != 0:
+                raise Exception("Subprocess errored")
 
-    def complete_callback(self, f):
-        pass
+        except KeyError:
+            pass
 
+
+class Executor(object):
+
+    def __init__(self, has_params, script_path):
+        self._has_params = has_params
+        self._script_path = script_path
+
+    def __call__(self, param = 0):
+        if self._has_params:
+            return ["osascript", self._script_path, str(param)]
+        else:
+            return ["osascript", self._script_path]
