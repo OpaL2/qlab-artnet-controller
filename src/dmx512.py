@@ -62,8 +62,8 @@ class CallbackExecutor(object):
 
     def add_callback(self, channel, callback):
 
-        async def _executor_callback(ch, packet):
-            callback(ch, packet)
+        async def _executor_callback(packet):
+            callback(packet)
 
         self.add_coroutine_callback(channel, _executor_callback)
 
@@ -87,7 +87,7 @@ class CallbackExecutor(object):
             for channel, value in packet:
                 if self._previous(channel) != value:
                     try:
-                        asyncio.ensure_future(self._callbacks[channel](channel + 1, packet))
+                        asyncio.ensure_future(self._callbacks[channel](packet))
                     except KeyError:
                         pass
 
