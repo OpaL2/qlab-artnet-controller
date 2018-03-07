@@ -56,12 +56,16 @@ class CallbackExecutor(object):
         self._previous = DMX512Frame()
         self._close = False
 
+    def add_coroutine_callback(self, channel, callback):
+
+        self._callbacks[channel] = callback
+
     def add_callback(self, channel, callback):
 
-        async def executor_callback(ch, packet):
-            callback(ch,packet)
+        async def _executor_callback(ch, packet):
+            callback(ch, packet)
 
-        self._callbacks[channel] = executor_callback
+        self.add_coroutine_callback(channel, _executor_callback)
 
         return self
 
