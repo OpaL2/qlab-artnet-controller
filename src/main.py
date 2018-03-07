@@ -3,28 +3,20 @@
 
 import asyncio
 import artnet
-import worker
 
-class Printer(worker.AbstractWorker):
-
-    def __init__(self, inp):
-        self._input = inp
-        self._close = False
-
-    def complete_callback(self, f):
-        pass
-
-    async def process_next(self, item):
-        print(item.get_channel_value(1))
+def pretty_print(channel, packet):
+    print("Value change detected: %s" % channel)
+    print("New value buffer: \n %s" % packet)
 
 loop = asyncio.get_event_loop()
-addr =('10.52.84.255', 0x1936)
+addr =('10.100.63.255', 0x1936)
 ArtNet = artnet.ArtNet(loop, addr)
 universe = ArtNet.create_universe(0)
-printer = Printer(universe)
+printer = universe.create_callback_executor() \
+    .add_callback(0, pretty_print) \
+    .add_callback(1, pretty_print)
 
-printer()
-
+asyncio.ensure_future(printer.run())
 
 # Running loop, exiting on keyboard interrupt
 try:

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import socket
+
+from dmx512 import Universe, DMX512Frame
 
 class ArtNet(asyncio.DatagramProtocol):
     #Contains ID, opcode and protocol version, rest is to be parsed
@@ -14,7 +17,7 @@ class ArtNet(asyncio.DatagramProtocol):
 
 
         listen = loop.create_datagram_endpoint(self, local_addr = addr)
-        loop.run_until_complete(listen)
+        asyncio.ensure_future(listen)
 
     def connection_made(self, transport):
         self._transport = transport
@@ -49,23 +52,3 @@ class ArtNet(asyncio.DatagramProtocol):
 
     def close(self):
         self._transport.close()
-
-class DMX512Frame(object):
-
-    def __init__(self, data):
-        self._data = data + [0] * (512 - len(data))
-
-    def get_data(self):
-        return self._data
-
-    def get_channel_value(self, ch):
-        return self._data[ch - 1]
-
-class Universe(asyncio.Queue):
-
-    def __init__(self, universe):
-        super().__init__(maxsize=20)
-        self._universe = universe
-
-    def get_universe(self):
-        return self._universe
