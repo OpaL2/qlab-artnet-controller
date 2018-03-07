@@ -83,7 +83,7 @@ class CallbackExecutor(object):
             for channel, value in packet:
                 if self._previous(channel) != value:
                     try:
-                        asyncio.ensure_future(self._callbacks[channel](channel, packet))
+                        asyncio.ensure_future(self._callbacks[channel](channel + 1, packet))
                     except KeyError:
                         pass
 
