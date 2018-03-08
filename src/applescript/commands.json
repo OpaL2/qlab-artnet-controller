@@ -1,0 +1,14 @@
+{
+  "commands":[
+    {
+      "channel_value": 1,
+      "script_name": "qlab_test.scpt",
+      "takes_parameter": false
+    },
+    {
+      "channel_value": 5,
+      "script_name": "qlab_start_cue.scpt",
+      "takes_parameter": true
+    }
+  ]
+}

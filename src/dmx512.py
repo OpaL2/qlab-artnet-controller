@@ -60,6 +60,8 @@ class CallbackExecutor(object):
 
         self._callbacks[channel - 1] = callback
 
+        return self
+
     def add_callback(self, channel, callback):
 
         async def _executor_callback(packet):
