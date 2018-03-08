@@ -30,12 +30,12 @@ class QLab(object):
         try:
             executor = self._executors[packet.get_channel_value(self._control_channel)]
             print("Executing script: %s" % executor)
-            process = await asyncio.create_subprocess_exec(executor(packet.get_channel_value(self._parameter_channel)))
+            process = await asyncio.create_subprocess_shell(executor(packet.get_channel_value(self._parameter_channel)))
 
             await process.wait()
             returncode = process.returncode
             if returncode != 0:
-                raise Exception("Script %s errored" % executor)
+                print("Script %s errored with returncode %i" % (executor, returncode))
 
         except KeyError:
             pass
@@ -52,7 +52,7 @@ class Executor(object):
         if self._has_params:
             return ' '.join(["osascript", self._script_path, str(param)])
         else:
-            return ["osascript", self._script_path]
+            return ' '.join(["osascript", self._script_path])
 
     def __str__(self):
-        return self._script_path
+        return self._script_path.split('/')[-1]

@@ -31,7 +31,7 @@ qlab = qlab.QLab(config["DMX512"]["control_channel"], config["DMX512"]["paramete
     .parse_executors(working_dir + '/../src/applescript')
 
 loop = asyncio.get_event_loop()
-addr =(get_broadcast_address(config), config["networking"]["port"])
+addr = (get_broadcast_address(config), config["networking"]["port"])
 ArtNet = artnet.ArtNet(loop, addr)
 worker = ArtNet.create_universe(config["DMX512"]["universe"]) \
     .create_callback_executor() \
