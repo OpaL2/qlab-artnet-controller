@@ -35,10 +35,9 @@ addr = (get_broadcast_address(config), config["networking"]["port"])
 ArtNet = artnet.ArtNet(loop, addr)
 worker = ArtNet.create_universe(config["DMX512"]["universe"]) \
     .create_callback_executor() \
-    .add_coroutine_callback(*qlab.get_callback()) \
-    .add_callback(2, pretty_print)
+    .add_coroutine_callback(*qlab.get_callback())
 
-    asyncio.ensure_future(worker.run())
+asyncio.ensure_future(worker.run())
 
 # Running loop, exiting on keyboard interrupt
 try:
